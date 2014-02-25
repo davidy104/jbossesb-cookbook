@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<jbossesb parameterReloadSecs="5"
+	xmlns="http://anonsvn.labs.jboss.com/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.3.0.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://anonsvn.labs.jboss.com/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.3.0.xsd http://anonsvn.jboss.org/repos/labs/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.3.0.xsd">
+	<providers>
+		<jms-provider connection-factory="ConnectionFactory"
+			name="JBossMQ">
+			<jms-bus busid="chapter6GwChannel">
+				<jms-message-filter dest-name="queue/chapter6_Request_gw"
+					dest-type="QUEUE" />
+			</jms-bus>
+			<jms-bus busid="chapter6ESBChannel">
+				<jms-message-filter dest-name="queue/chapter6_Request_esb"
+					dest-type="QUEUE" />
+			</jms-bus>
+		</jms-provider>
+		<fs-provider name="Chapter6FSprovider">
+			<fs-bus busid="chapter6FileChannel">
+				<fs-message-filter directory="${java.io.tmpdir}"
+					input-suffix=".msg" />
+			</fs-bus>
+		</fs-provider>
+		<http-provider name="http">
+			<http-bus busid="chapter6HttpGateway" />
+		</http-provider>
+	</providers>
+	<services>
+		<service category="Chapter6Sample" description="A template for Chapter6"
+			name="Chapter6Service">
+			<listeners>
+				<jms-listener busidref="chapter6ESBChannel" name="Chapter6ESBListener" />
+				<jms-listener busidref="chapter6GwChannel" is-gateway="true"
+					name="Chapter6GwListener" />
+				<udp-listener name="Chapter6UDPListener" host="localhost"
+					port="9999" is-gateway="true" />
+			</listeners>
+			<actions mep="RequestResponse">
+				<action class="com.jbossesb.cookbook.chapter6.MyAction" name="MyAction" />
+				<action name="notificationAction" class="org.jboss.soa.esb.actions.Notifier">
+					<property name="okMethod" value="notifyOK" />
+					<property name="notification-details">
+						<NotificationList type="ok">
+							<target class="NotifyQueues">
+								<queue jndiName="queue/chapter6_Request_gw_reply" />
+							</target>
+						</NotificationList>
+					</property>
+				</action>
+			</actions>
+		</service>
+
+		<service category="Chapter6Sample" description="File GW for Chapter6"
+			name="Chapter6FileService" invmScope="GLOBAL">
+			<listeners>
+				<fs-listener busidref="chapter6FileChannel" is-gateway="true"
+					name="Chapter6FileGwListener" />
+			</listeners>
+			<actions mep="RequestResponse">
+				<action class="com.jbossesb.cookbook.chapter6.MyAction" name="MyAction" />
+				<action name="notificationAction" class="org.jboss.soa.esb.actions.Notifier">
+					<property name="okMethod" value="notifyOK" />
+					<property name="notification-details">
+						<NotificationList type="ok">
+							<target class="NotifyFiles">
+								<file append="false" URI="${java.io.tmpdir}/results.log" />
+							</target>
+						</NotificationList>
+					</property>
+				</action>
+			</actions>
+		</service>
+
+		<service category="Chapter6Sample" description="HTTP GW for Chapter6"
+			name="Chapter6HttpService" invmScope="GLOBAL">
+			<listeners>
+				<http-gateway busidref="chapter6HttpGateway" name="Chapter6HttpGwListener" />
+			</listeners>
+			<actions mep="RequestResponse">
+				<action class="com.jbossesb.cookbook.chapter6.MyAction" name="MyAction" />
+			</actions>
+		</service>
+	</services>
+</jbossesb>

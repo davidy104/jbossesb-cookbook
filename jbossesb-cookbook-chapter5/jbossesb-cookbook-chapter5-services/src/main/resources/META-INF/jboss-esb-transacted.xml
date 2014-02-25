@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<jbossesb parameterReloadSecs="5"
+	xmlns="http://anonsvn.labs.jboss.com/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.3.0.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://anonsvn.labs.jboss.com/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.3.0.xsd http://anonsvn.jboss.org/repos/labs/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.3.0.xsd">
+	<providers>
+		<jms-provider connection-factory="ConnectionFactory"
+			name="JBossMQ">
+			<jms-bus busid="Chapter5EsbChannel1">
+				<jms-message-filter dest-name="queue/chapter5_Request_esb1"
+					dest-type="QUEUE" transacted="false" />
+			</jms-bus>
+			<jms-bus busid="Chapter5EsbChannel2">
+				<jms-message-filter dest-name="queue/chapter5_Request_esb2"
+					dest-type="QUEUE" transacted="true" />
+			</jms-bus>
+		</jms-provider>
+	</providers>
+	<services>
+		<service category="Chapter5Sample" description="A template for Chapter5"
+			name="Chapter5Service">
+			<listeners>
+				<jms-listener busidref="Chapter5EsbChannel1" name="Chapter5provider" />
+			</listeners>
+			<actions mep="OneWay">
+				<action class="org.jboss.soa.esb.actions.SystemPrintln" name="printMessage">
+					<property name="message" value="Incoming" />
+				</action>
+				<action class="org.jboss.soa.esb.actions.StaticRouter" name="RouteToB">
+					<property name="destinations">
+						<route-to service-category="Chapter5Sample" service-name="Chapter5BService" />
+					</property>
+				</action>
+			</actions>
+		</service>
+		<service category="Chapter5Sample" description="Chapter5 B Service"
+			invmScope="GLOBAL" name="Chapter5BService" invmTransacted="true">
+			<actions mep="OneWay">
+				<action class="org.jboss.soa.esb.samples.chapter5.MyAction"
+					name="processTransaction" />
+				<!-- Will throw an Exception. This should trigger the transaction to 
+					be rolledback and the message placed back onto the InVM queue. -->
+				<action class="org.jboss.soa.esb.samples.chapter5.MyAction"
+					name="throwException" process="causesException" />
+				<action class="org.jboss.soa.esb.actions.SystemPrintln" name="printMessage">
+					<property name="message" value="Outgoing" />
+				</action>
+			</actions>
+		</service>
+	</services>
+</jbossesb>

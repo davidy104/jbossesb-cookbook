@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<uddi>
+    <reloadDelay>5000</reloadDelay>
+    <manager name="test-manager">
+        <nodes>
+            <node>
+                <!-- required 'default' node -->
+                <name>default</name> 
+                <description>Main jUDDI node</description>
+                <properties>
+                    <property name="serverName" value="localhost" />
+                    <property name="serverPort" value="8880" />
+                </properties>
+                <!-- RMI Transport Settings -->
+                <proxyTransport>org.jboss.internal.soa.esb.registry.client.JuddiRMITransport</proxyTransport>
+                <custodyTransferUrl>/juddiv3/UDDICustodyTransferService</custodyTransferUrl>
+                <inquiryUrl>/juddiv3/UDDIInquiryService</inquiryUrl>
+                <publishUrl>/juddiv3/UDDIPublicationService</publishUrl>
+                <securityUrl>/juddiv3/UDDISecurityService</securityUrl>
+                <subscriptionUrl>/juddiv3/UDDISubscriptionService</subscriptionUrl>
+                <subscriptionListenerUrl>/juddiv3/UDDISubscriptionListenerService</subscriptionListenerUrl>
+                <juddiApiUrl>/juddiv3/JUDDIApiService</juddiApiUrl>
+                <javaNamingFactoryInitial>org.jnp.interfaces.NamingContextFactory</javaNamingFactoryInitial>
+                <javaNamingFactoryUrlPkgs>org.jboss.naming</javaNamingFactoryUrlPkgs>
+                <javaNamingProviderUrl>jnp://localhost:1099</javaNamingProviderUrl>
+            </node>
+        </nodes>
+    </manager>
+</uddi>

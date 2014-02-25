@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<jbossesb parameterReloadSecs="5"
+	xmlns="http://anonsvn.labs.jboss.com/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.3.0.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://anonsvn.labs.jboss.com/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.3.0.xsd http://anonsvn.jboss.org/repos/labs/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.3.0.xsd">
+	<providers>
+		<jms-provider connection-factory="ConnectionFactory"
+			name="JBossMQ">
+			<jms-bus busid="chapter3GwChannel">
+				<jms-message-filter dest-name="queue/chapter3_Request_gw"
+					dest-type="QUEUE" />
+			</jms-bus>
+			<jms-bus busid="chapter3EsbChannel">
+				<jms-message-filter dest-name="queue/chapter3_Request_esb"
+					dest-type="QUEUE" />
+			</jms-bus>
+		</jms-provider>
+	</providers>
+	<services>
+		<service category="Chapter3Sample" description="A template for Chapter3"
+			name="Chapter3Service">
+			<listeners>
+				<jms-listener busidref="chapter3GwChannel" is-gateway="true"
+					name="Chapter3GwListener" />
+				<jms-listener busidref="chapter3EsbChannel" name="Chapter3Listener" />
+			</listeners>
+			<actions mep="OneWay">
+				<action class="org.jboss.soa.esb.actions.SystemPrintln" name="PrintBefore">
+					<property name="message" />
+					<property name="printfull" value="true" />
+				</action>
+				<action class="com.jbossesb.cookbook.chapter3.MyAction1"
+					name="BodyConvert" process="messageToBean">
+				</action>
+				<action class="com.jbossesb.cookbook.chapter3.MyAction" name="BodyPrinter"
+					process="displayMessage">
+					<property name="symbol" value="*" />
+					<property name="count" value="50" />
+				</action>
+				<action class="org.jboss.soa.esb.actions.SystemPrintln" name="PrintAfter">
+					<property name="message" />
+					<property name="printfull" value="true" />
+				</action>
+				<action name="routeToNext" class="org.jboss.soa.esb.actions.StaticRouter">
+					<property name="destinations">
+						<route-to service-category="Chapter3Sample" service-name="ChainedServiceB" />
+					</property>
+				</action>
+			</actions>
+		</service>
+
+		<service category="Chapter3Sample" name="ChainedServiceB"
+			description="Chained Service Service B" invmScope="GLOBAL">
+			<actions mep="OneWay">
+				<action class="com.jbossesb.cookbook.chapter3.MyAction" name="BodyPrinter"
+					process="displayMessage">
+					<property name="symbol" value="*" />
+					<property name="count" value="50" />
+				</action>
+				<action name="routeToNext" class="org.jboss.soa.esb.actions.StaticRouter">
+					<property name="destinations">
+						<route-to service-category="Chapter3Sample" service-name="ChainedServiceC" />
+					</property>
+				</action>
+			</actions>
+		</service>
+
+		<service category="Chapter3Sample" name="ChainedServiceC"
+			description="Chained Service Service C" invmScope="GLOBAL">
+			<actions mep="RequestResponse">
+				<action class="com.jbossesb.cookbook.chapter3.MyAction" name="BodyPrinter"
+					process="displayMessage">
+					<property name="symbol" value="*" />
+					<property name="count" value="50" />
+				</action>
+			</actions>
+		</service>
+
+
+	</services>
+</jbossesb>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.jbossesb.cookbook</groupId>
+		<artifactId>jbossesb-cookbook</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<groupId>com.jbossesb.cookbook.chapter3</groupId>
+	<artifactId>jbossesb-cookbook-chapter3</artifactId>
+
+	<name>jbossesb-cookbook-chapter3</name>
+	<packaging>pom</packaging>
+	<modules>
+		<module>jbossesb-cookbook-chapter3-services</module>
+		<module>jbossesb-cookbook-chapter3-client</module>
+	</modules>
+</project>

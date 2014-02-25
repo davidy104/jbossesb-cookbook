@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jbossesb-deployment>
+	<depends>jboss.esb.book.samples.destination:service=Queue,name=chapter6_Request_esb
+	</depends>
+	<depends>jboss.esb.book.samples.destination:service=Queue,name=chapter6_Request_esb_reply
+	</depends>
+	<depends>jboss.esb.book.samples.destination:service=Queue,name=chapter6_Request_gw
+	</depends>
+	<depends>jboss.esb.book.samples.destination:service=Queue,name=chapter6_Request_gw_reply
+	</depends>
+	<!-- <depends>jboss.esb.book.samples.database:service=Chapter6SqlDatabaseInitializer</depends> -->
+</jbossesb-deployment>

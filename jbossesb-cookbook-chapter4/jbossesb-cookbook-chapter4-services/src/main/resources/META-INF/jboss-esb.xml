@@ -1,0 +1,117 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<jbossesb
+	xmlns="http://anonsvn.labs.jboss.com/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.0.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://anonsvn.labs.jboss.com/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.0.1.xsd http://anonsvn.jboss.org/repos/labs/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.0.1.xsd"
+	parameterReloadSecs="5">
+
+	<providers>
+		<jms-provider name="JBossMQ" connection-factory="ConnectionFactory">
+			<jms-bus busid="chapter4CustomActionGwChannel">
+				<jms-message-filter dest-type="QUEUE"
+					dest-name="queue/chapter4_customaction_Request_gw" />
+			</jms-bus>
+			<jms-bus busid="chapter4CustomActionEsbChannel">
+				<jms-message-filter dest-type="QUEUE"
+					dest-name="queue/chapter4_customaction_Request_esb" />
+			</jms-bus>
+
+			<jms-bus busid="chapter4GroovyscriptGwChannel">
+				<jms-message-filter dest-type="QUEUE"
+					dest-name="queue/chapter4_groovyscript_Request_gw" />
+			</jms-bus>
+			<jms-bus busid="chapter4GroovyscriptEsbChannel">
+				<jms-message-filter dest-type="QUEUE"
+					dest-name="queue/chapter4_groovyscript_Request_esb" />
+			</jms-bus>
+
+		</jms-provider>
+	</providers>
+
+	<services>
+		<service category="ActionServices" name="CustomActionService"
+			description="Custom Action EPR description">
+			<listeners>
+				<jms-listener name="JMS-CustomAction-Gateway" busidref="chapter4CustomActionGwChannel"
+					is-gateway="true" />
+				<jms-listener name="JMS-CustomAction-ESBListener"
+					busidref="chapter4CustomActionEsbChannel" />
+			</listeners>
+			<actions mep="RequestResponse">
+				<action name="first"
+					class="com.jbossesb.cookbook.chapter4.customaction.MyBasicAction"
+					process="displayMessage">
+					<property name="exceptionMethod" value="exceptionHandler" />
+				</action>
+				<action name="second"
+					class="com.jbossesb.cookbook.chapter4.customaction.MyBasicAction">
+					<property name="exceptionMethod" value="exceptionHandler" />
+				</action>
+				<action name="third"
+					class="com.jbossesb.cookbook.chapter4.customaction.MyBasicAction"
+					process="displayMessage">
+					<property name="exceptionMethod" value="exceptionHandler" />
+				</action>
+
+				<action name="fourth"
+					class="com.jbossesb.cookbook.chapter4.customaction.StatefulAction"
+					process="methodOne,methodTwo,displayCount">
+					<property name="exceptionMethod" value="exceptionHandler" />
+				</action>
+				<action name="fifth"
+					class="com.jbossesb.cookbook.chapter4.customaction.CustomConfigAction"
+					process="displayConfig">
+					<property name="myStuff" value="rocks" />
+					<property name="moreStuff" value="rocks harder" />
+					<property name="subElements">
+						<subElement1>Value of 1</subElement1>
+						<subElement2>Value of 2</subElement2>
+						<subElement3>Value of 3</subElement3>
+					</property>
+				</action>
+				<action name="sixth"
+					class="com.jbossesb.cookbook.chapter4.customaction.MyBasicAction"
+					process="displayMessage">
+					<property name="exceptionMethod" value="exceptionHandler" />
+				</action>
+
+				<action name="seventh"
+					class="com.jbossesb.cookbook.chapter4.customaction.CustomBeanConfigAction">
+					<property name="information" value="Hola Mundo" />
+					<property name="repeatCount" value="5" />
+				</action>
+				<action name="testStore" class="org.jboss.soa.esb.actions.TestMessageStore" />
+			</actions>
+		</service>
+
+		<service category="ActionServices" name="MoreActionService"
+			description="More 
+			Action EPR description">
+			<listeners>
+				<jms-listener name="JMS-Groovyscript-Gateway" busidref="chapter4GroovyscriptGwChannel"
+					is-gateway="true" />
+				<jms-listener name="JMS-Groovyscript-ESBListener"
+					busidref="chapter4GroovyscriptEsbChannel" />
+			</listeners>
+			<actions mep="OneWay">
+				<action name="groovyHelloWorld"
+					class="org.jboss.soa.esb.actions.scripting.GroovyActionProcessor">
+					<property name="script" value="/scripts/helloWorld.groovy" />
+				</action>
+				<action name="groovyTop10"
+					class="org.jboss.soa.esb.actions.scripting.GroovyActionProcessor">
+					<property name="script" value="/scripts/iTunesTop10.groovy" />
+				</action>
+				<action name="groovyMessagePlay"
+					class="org.jboss.soa.esb.actions.scripting.GroovyActionProcessor">
+					<property name="script" value="/scripts/messagePlay.groovy" />
+				</action>
+				<action name="testStore" class="org.jboss.soa.esb.actions.TestMessageStore" />
+			</actions>
+		</service>
+
+
+
+	</services>
+
+</jbossesb>

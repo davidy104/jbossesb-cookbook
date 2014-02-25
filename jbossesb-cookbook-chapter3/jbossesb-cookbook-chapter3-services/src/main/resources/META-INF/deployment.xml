@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jbossesb-deployment>
+	<depends>jboss.esb.book.samples.destination:service=Queue,name=chapter3_Request_esb
+	</depends>
+	<depends>jboss.esb.book.samples.destination:service=Queue,name=chapter3_Request_gw
+	</depends>
+</jbossesb-deployment>
